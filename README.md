@@ -41,10 +41,7 @@ $ make test
 
 # Todo for this boilerplate
 
-[] Update go.mod
-
-[] update package name in: generate-server.config.yaml
-
-[] fix all import in *.go files
-
-[] Update Readme.md
+- [ ] Update go.mod
+- [ ] update package name in: generate-server.config.yaml
+- [ ] fix all import in *.go files
+- [ ] Update Readme.md
