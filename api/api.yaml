@@ -1,0 +1,145 @@
+openapi: 3.0.0
+info:
+  title: Raya PFM
+  description: Bank Raya Personal Finance Manager Service API
+  version: 0.0.1
+  license:
+    name: private
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  /healthcheck:
+    get:
+      operationId: healthCheck
+      responses:
+        200:
+          description: System is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/healthCheckResponse'
+        500:
+          $ref: '#/components/responses/500'
+  /dummy/sample:
+    get:
+      operationId: dummyEndpoint
+      parameters:
+        - in: query
+          name: type
+          schema:
+            type: string
+          x-oapi-codegen-extra-tags:
+            validate: "required"
+          description: Error type
+      responses:
+        200:
+          $ref: '#/components/responses/success'
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
+    post:
+      operationId: dummyEndpointPost
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+                  x-oapi-codegen-extra-tags:
+                    validate: "required"
+      responses:
+        200:
+          $ref: '#/components/responses/success'
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
+
+components:
+  responses:
+    success:
+      description: base success response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BaseSuccess'
+    400:
+      description: bad request error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    401:
+      description: unauthorized error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    403:
+      description: forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    404:
+      description: not found error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    500:
+      description: internal api-server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    Error:
+      type: object
+      required:
+        - code
+        - message
+        - edited
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        edited:
+          type: boolean
+        error: { }
+    BaseSuccess:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        data: {}
+      required:
+        - code
+        - message
+        - data
+    healthCheckResponse:
+      type: object
+      properties:
+        healthy:
+          type: boolean
+      required:
+        - healthy

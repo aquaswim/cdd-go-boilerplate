@@ -1,0 +1,9 @@
+package: api
+generate:
+  echo-server: true
+  embedded-spec: true
+  models: false
+  strict-server: false
+additional-imports:
+  - package: cdd-go-boilerplate/internal/entity
+    alias: .
