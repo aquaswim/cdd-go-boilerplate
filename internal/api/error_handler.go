@@ -24,12 +24,18 @@ func ErrorHandler() echo.HTTPErrorHandler {
 
 		{
 			var e *errorx.Errorx
+			var echoError *echo.HTTPError
 			if errors.As(err, &e) {
 				code = translateErrCodeToHttpCode(e.Code)
 				response.Error = e.Data
 				response.Message = e.Message
 				response.Code = e.Code
 				response.Edited = e.Edited
+			}
+			if errors.As(err, &echoError) {
+				l.Error().Err(err).Msg("Framework error received")
+				response.Message = echoError.Error()
+				response.Code = "FRAMEWORK"
 			} else {
 				// unknown error type will be printed to log
 				// Echo's HttpError (like 404) is not handled yet and treated as Internal Error
