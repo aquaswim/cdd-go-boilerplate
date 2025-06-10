@@ -17,6 +17,7 @@ func main() {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer func() {
 		stop()
+		closesDB(c)
 	}()
 
 	go func() {
