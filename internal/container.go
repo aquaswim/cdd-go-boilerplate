@@ -4,11 +4,13 @@ import (
 	"cdd-go-boilerplate/internal/api"
 	"cdd-go-boilerplate/internal/config"
 	"cdd-go-boilerplate/internal/module"
+	bunHelper "cdd-go-boilerplate/internal/pkg/bun_helper"
 	globalLogger "cdd-go-boilerplate/internal/pkg/global_logger"
 	"cdd-go-boilerplate/internal/pkg/utils"
 	"cdd-go-boilerplate/internal/pkg/validation"
 
 	"github.com/golobby/container/v3"
+	"github.com/uptrace/bun"
 )
 
 func InitContainer() container.Container {
@@ -21,6 +23,15 @@ func InitContainer() container.Container {
 		})
 	})
 	container.MustSingleton(container.Global, validation.NewValidator)
+
+	container.MustSingleton(container.Global, func(cfg *config.Config) *bun.DB {
+		return bunHelper.ConnectPg(&bunHelper.ConfigPg{
+			Host:     cfg.DBPgHost,
+			DBName:   cfg.DBPgDBName,
+			Username: cfg.DBPgUsername,
+			Password: cfg.DBPgPassword,
+		})
+	})
 
 	utils.SingletonWithAutoInject(container.Global, module.FillDummyModule)
 
