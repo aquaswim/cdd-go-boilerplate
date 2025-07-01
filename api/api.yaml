@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
-  title: Raya PFM
-  description: Bank Raya Personal Finance Manager Service API
+  title: MyAPI
+  description: My Awesome API
   version: 0.0.1
   license:
     name: private
