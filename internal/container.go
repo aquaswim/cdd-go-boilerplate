@@ -6,6 +6,7 @@ import (
 	"cdd-go-boilerplate/internal/module"
 	globalLogger "cdd-go-boilerplate/internal/pkg/global_logger"
 	"cdd-go-boilerplate/internal/pkg/validation"
+
 	"github.com/golobby/container/v3"
 )
 

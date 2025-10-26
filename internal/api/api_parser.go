@@ -3,9 +3,10 @@ package api
 import (
 	"cdd-go-boilerplate/internal/entity"
 	"cdd-go-boilerplate/internal/pkg/errorx"
+	"net/http"
+
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
-	"net/http"
 )
 
 func validateStruct(v *validator.Validate, data any) error {

@@ -1,11 +1,12 @@
 package globalLogger
 
 import (
+	"os"
+	"time"
+
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/rs/zerolog/pkgerrors"
-	"os"
-	"time"
 )
 
 func Setup(cfg *Config) {

@@ -4,9 +4,10 @@ import (
 	"cdd-go-boilerplate/internal/entity"
 	"cdd-go-boilerplate/internal/pkg/errorx"
 	"errors"
+	"net/http"
+
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog"
-	"net/http"
 )
 
 func ErrorHandler() echo.HTTPErrorHandler {

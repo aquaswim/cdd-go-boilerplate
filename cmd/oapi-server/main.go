@@ -4,9 +4,10 @@ import (
 	"cdd-go-boilerplate/internal"
 	"cdd-go-boilerplate/internal/api"
 	"context"
-	"github.com/rs/zerolog/log"
 	"os"
 	"os/signal"
+
+	"github.com/rs/zerolog/log"
 )
 
 func main() {

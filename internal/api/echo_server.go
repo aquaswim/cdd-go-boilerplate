@@ -3,13 +3,14 @@ package api
 import (
 	"context"
 	"errors"
+	"net/http"
+	"time"
+
 	"github.com/getkin/kin-openapi/openapi3filter"
 	"github.com/labstack/echo/v4"
 	echoMiddleware "github.com/labstack/echo/v4/middleware"
 	oapiMiddleware "github.com/oapi-codegen/echo-middleware"
 	"github.com/rs/zerolog/log"
-	"net/http"
-	"time"
 )
 
 type Server interface {

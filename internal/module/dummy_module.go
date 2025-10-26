@@ -3,6 +3,7 @@ package module
 import (
 	"cdd-go-boilerplate/internal/pkg/errorx"
 	"context"
+
 	"github.com/rs/zerolog"
 )
 
