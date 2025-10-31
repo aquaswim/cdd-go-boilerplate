@@ -31,7 +31,7 @@ func (a apiServer) HealthCheck(ctx echo.Context) error {
 }
 
 func (a apiServer) DummyEndpoint(ctx echo.Context, params entity.DummyEndpointParams) error {
-	err := validateStruct(a.validate, ctx)
+	err := validateStruct(a.validate, params)
 	if err != nil {
 		return err
 	}
