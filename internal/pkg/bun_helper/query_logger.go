@@ -2,9 +2,10 @@ package bunHelper
 
 import (
 	"context"
+	"time"
+
 	"github.com/rs/zerolog"
 	"github.com/uptrace/bun"
-	"time"
 )
 
 const slowQueryThreshold = 3000 * time.Millisecond
