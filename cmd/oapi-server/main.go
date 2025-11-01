@@ -3,6 +3,7 @@ package main
 import (
 	"cdd-go-boilerplate/internal"
 	"cdd-go-boilerplate/internal/api"
+	"cdd-go-boilerplate/internal/pkg/utils"
 	"context"
 	"os"
 	"os/signal"
@@ -13,7 +14,7 @@ import (
 func main() {
 	c := internal.InitContainer()
 
-	server := internal.Resolve[api.Server](c)
+	server := utils.Resolve[api.Server](c)
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer func() {

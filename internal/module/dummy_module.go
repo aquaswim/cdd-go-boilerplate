@@ -4,6 +4,7 @@ import (
 	"cdd-go-boilerplate/internal/pkg/errorx"
 	"context"
 
+	"github.com/golobby/container/v3"
 	"github.com/rs/zerolog"
 )
 
@@ -12,6 +13,12 @@ type DummyModule interface {
 }
 
 type dummyModule struct {
+}
+
+func FillDummyModule(c container.Container) (DummyModule, error) {
+	o := new(dummyModule)
+	err := c.Fill(o)
+	return o, err
 }
 
 func (d dummyModule) Dummy(ctx context.Context, paramType string) (interface{}, error) {
@@ -34,9 +41,4 @@ func (d dummyModule) Dummy(ctx context.Context, paramType string) (interface{}, 
 			"stuff": "lorem ipsum",
 		}, nil
 	}
-}
-
-func NewDummyModule() DummyModule {
-	return &dummyModule{}
-
 }

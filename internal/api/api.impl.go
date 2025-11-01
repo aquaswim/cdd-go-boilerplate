@@ -6,22 +6,19 @@ import (
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/golobby/container/v3"
 	"github.com/labstack/echo/v4"
 )
 
 type apiServer struct {
-	validate    *validator.Validate
-	dummyModule module.DummyModule
+	validate    *validator.Validate `container:"type"`
+	dummyModule module.DummyModule  `container:"type"`
 }
 
-func NewApiServer(
-	validate *validator.Validate,
-	dummyModule module.DummyModule,
-) ServerInterface {
-	return &apiServer{
-		validate:    validate,
-		dummyModule: dummyModule,
-	}
+func FillApiServer(c container.Container) (ServerInterface, error) {
+	o := new(apiServer)
+	err := c.Fill(o)
+	return o, err
 }
 
 func (a apiServer) HealthCheck(ctx echo.Context) error {

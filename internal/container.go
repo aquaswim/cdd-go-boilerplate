@@ -5,6 +5,7 @@ import (
 	"cdd-go-boilerplate/internal/config"
 	"cdd-go-boilerplate/internal/module"
 	globalLogger "cdd-go-boilerplate/internal/pkg/global_logger"
+	"cdd-go-boilerplate/internal/pkg/utils"
 	"cdd-go-boilerplate/internal/pkg/validation"
 
 	"github.com/golobby/container/v3"
@@ -21,22 +22,11 @@ func InitContainer() container.Container {
 	})
 	container.MustSingleton(container.Global, validation.NewValidator)
 
-	container.MustSingleton(container.Global, module.NewDummyModule)
+	utils.SingletonWithAutoInject(container.Global, module.FillDummyModule)
 
-	container.MustSingleton(container.Global, api.NewApiServer)
+	utils.SingletonWithAutoInject(container.Global, api.FillApiServer)
+
 	container.MustSingleton(container.Global, api.NewEchoServer)
 
 	return container.Global
-}
-
-func Resolve[T any](c container.Container) T {
-	var t T
-	container.MustResolve(c, &t)
-	return t
-}
-
-func ResolveNamed[T any](c container.Container, name string) T {
-	var t T
-	container.MustNamedResolve(c, &t, name)
-	return t
 }
