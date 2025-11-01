@@ -2,11 +2,12 @@ package bunHelper
 
 import (
 	"database/sql"
+	"time"
+
 	"github.com/rs/zerolog/log"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
 	"github.com/uptrace/bun/driver/pgdriver"
-	"time"
 )
 
 type ConfigPg struct {
