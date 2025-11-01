@@ -7,10 +7,15 @@ info:
     name: private
 servers:
   - url: 'http://localhost:3000'
+tags:
+  - name: others
+    description: other endpoint
 paths:
   /healthcheck:
     get:
       operationId: healthCheck
+      tags:
+        - others
       responses:
         200:
           description: System is healthy
@@ -23,6 +28,8 @@ paths:
   /dummy/sample:
     get:
       operationId: dummyEndpoint
+      tags:
+        - others
       parameters:
         - in: query
           name: type
@@ -46,6 +53,8 @@ paths:
           $ref: '#/components/responses/500'
     post:
       operationId: dummyEndpointPost
+      tags:
+        - others
       requestBody:
         required: true
         content:
