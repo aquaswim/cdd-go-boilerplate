@@ -1,11 +1,9 @@
 package api
 
 import (
-	"cdd-go-boilerplate/internal/entity"
-	"cdd-go-boilerplate/internal/pkg/errorx"
-	"errors"
-	"net/http"
+	appErrors "cdd-go-boilerplate/internal/app_errors"
 
+	"github.com/joomcode/errorx"
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog"
 )
@@ -15,53 +13,32 @@ func ErrorHandler() echo.HTTPErrorHandler {
 		if c.Response().Committed {
 			return
 		}
-		code := http.StatusInternalServerError
-		response := entity.Error{
-			Code:    "99",
-			Error:   nil,
-			Message: "Internal Server Error",
-		}
 		l := zerolog.Ctx(c.Request().Context())
-
-		{
-			var e *errorx.Errorx
-			var echoError *echo.HTTPError
-			if errors.As(err, &e) {
-				code = translateErrCodeToHttpCode(e.Code)
-				response.Error = e.Data
-				response.Message = e.Message
-				response.Code = e.Code
-				response.Edited = e.Edited
-			}
-			if errors.As(err, &echoError) {
-				l.Error().Err(err).Msg("Framework error received")
-				response.Message = echoError.Error()
-				response.Code = "FRAMEWORK"
-			} else {
-				// unknown error type will be printed to log
-				// Echo's HttpError (like 404) is not handled yet and treated as Internal Error
-				l.Error().Err(err).Type("errorType", err).Msg("Receive unknown error type while processing request")
-			}
+		errx := errorx.Cast(err)
+		if echoErr, ok := err.(*echo.HTTPError); ok {
+			// framework error
+			errx = errorx.Decorate(
+				appErrors.FrameworkError.WithProperty(appErrors.HttpCodeProperty, echoErr.Code),
+				"%s",
+				echoErr.Message,
+			).WithUnderlyingErrors(err)
+		} else if errx == nil {
+			// unknown error
+			l.Error().Err(err).Msg("unknown error occurred")
+			errx = errorx.Decorate(appErrors.FrameworkError, "%s", err).WithUnderlyingErrors(err)
 		}
 
-		err2 := c.JSON(code, response)
-		if err2 != nil {
-			l.Error().AnErr("error", err).AnErr("sendError", err2).Msg("Error while sending error response")
-		}
-	}
-}
+		l.Error().Err(errx).Stack().Msg("error occurred")
 
-func translateErrCodeToHttpCode(code string) int {
-	switch code {
-	case errorx.ErrCodeBadRequest:
-		return http.StatusBadRequest
-	case errorx.ErrCodeNotFound:
-		return http.StatusNotFound
-	case errorx.ErrCodeUnauthorized:
-		return http.StatusUnauthorized
-	case errorx.ErrCodeForbidden:
-		return http.StatusForbidden
-	default:
-		return http.StatusInternalServerError
+		errResp, httpCode := appErrors.ExtractAppError(errx)
+
+		err = c.JSON(httpCode, errResp)
+		if err != nil {
+			l.Error().
+				Err(err).
+				Int("code", httpCode).
+				Any("response", errResp).
+				Msg("failed to send error response")
+		}
 	}
 }
