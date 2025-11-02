@@ -27,15 +27,15 @@ func (d dummyModule) Dummy(ctx context.Context, paramType string) (interface{}, 
 
 	switch paramType {
 	case "400":
-		return nil, appErrors.ValidationError
+		return nil, appErrors.ErrTypeValidation.New("Dummy Error")
 	//case "401":
 	//	return nil, errorx.New(errorx.ErrCodeUnauthorized, "Dummy Error")
 	//case "403":
 	//	return nil, errorx.New(errorx.ErrCodeForbidden, "Dummy Error")
 	case "404":
-		return nil, appErrors.NotFoundError
+		return nil, appErrors.ErrTypeNotFound.New("Dummy Error")
 	case "500":
-		return nil, appErrors.InternalError
+		return nil, appErrors.ErrTypeInternal.New("Dummy Error")
 	default:
 		return map[string]any{
 			"stuff": "lorem ipsum",

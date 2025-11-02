@@ -1,38 +1,30 @@
 package appErrors
 
 import (
-	"cdd-go-boilerplate/internal/entity"
-
 	"github.com/joomcode/errorx"
 )
 
 var appErrorNs = errorx.NewNamespace("app")
-var appErrorType = errorx.NewType(appErrorNs, "appError")
 
-var HttpCodeProperty = errorx.RegisterProperty("httpCode")
-var CodeProperty = errorx.RegisterProperty("code")
-var EditedProperty = errorx.RegisterProperty("edited")
+// define all error types here
+var (
+	ErrTypeInternal   = appErrorNs.NewType("internal")
+	ErrTypeValidation = appErrorNs.NewType("validation")
+	ErrTypeBind       = ErrTypeValidation.NewSubtype("bind")
+	ErrTypeNotFound   = appErrorNs.NewType("not_found")
+)
 
-func extractPropertyTo[T any](err error, prop errorx.Property, target *T) {
-	val, ok := errorx.ExtractProperty(err, prop)
-	if !ok {
-		return
+func typeToHttpCode(err error) int {
+	switch errorx.TypeSwitch(err,
+		ErrTypeNotFound,
+		ErrTypeValidation,
+		ErrTypeInternal,
+	) {
+	case ErrTypeNotFound:
+		return 404
+	case ErrTypeValidation:
+		return 400
+	default:
+		return 500
 	}
-
-	if v, ok := val.(T); ok {
-		*target = v
-	}
-}
-
-func ExtractAppError(err *errorx.Error) (*entity.Error, int) {
-	httpCode := 500
-	out := new(entity.Error)
-	out.Message = err.Message()
-
-	extractPropertyTo(err, HttpCodeProperty, &httpCode)
-	extractPropertyTo(err, EditedProperty, &out.Edited)
-	extractPropertyTo(err, CodeProperty, &out.Code)
-	extractPropertyTo(err, errorx.PropertyPayload(), &out.Error)
-
-	return out, httpCode
 }
