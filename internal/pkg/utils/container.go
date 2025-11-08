@@ -23,3 +23,12 @@ func SingletonWithAutoInject[T any](c container.Container, fn AutoInjectConstruc
 		return fn(c)
 	})
 }
+
+func Fill[T any](c container.Container) (*T, error) {
+	t := new(T)
+	err := c.Fill(t)
+	if err != nil {
+		return nil, err
+	}
+	return t, nil
+}

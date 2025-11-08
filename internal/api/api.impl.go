@@ -3,6 +3,7 @@ package api
 import (
 	"cdd-go-boilerplate/internal/entity"
 	"cdd-go-boilerplate/internal/module"
+	"cdd-go-boilerplate/internal/pkg/utils"
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
@@ -16,9 +17,7 @@ type apiServer struct {
 }
 
 func FillApiServer(c container.Container) (ServerInterface, error) {
-	o := new(apiServer)
-	err := c.Fill(o)
-	return o, err
+	return utils.Fill[apiServer](c)
 }
 
 func (a apiServer) HealthCheck(ctx echo.Context) error {

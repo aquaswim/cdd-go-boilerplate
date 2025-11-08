@@ -2,6 +2,7 @@ package module
 
 import (
 	"cdd-go-boilerplate/internal/pkg/errorx"
+	"cdd-go-boilerplate/internal/pkg/utils"
 	"context"
 
 	"github.com/golobby/container/v3"
@@ -16,9 +17,7 @@ type dummyModule struct {
 }
 
 func FillDummyModule(c container.Container) (DummyModule, error) {
-	o := new(dummyModule)
-	err := c.Fill(o)
-	return o, err
+	return utils.Fill[dummyModule](c)
 }
 
 func (d dummyModule) Dummy(ctx context.Context, paramType string) (interface{}, error) {
