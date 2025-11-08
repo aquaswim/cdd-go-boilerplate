@@ -2,7 +2,6 @@ package module
 
 import (
 	appErrors "cdd-go-boilerplate/internal/app_errors"
-	"cdd-go-boilerplate/internal/pkg/errorx"
 	"cdd-go-boilerplate/internal/pkg/utils"
 	"context"
 
