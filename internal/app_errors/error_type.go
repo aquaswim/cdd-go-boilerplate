@@ -8,10 +8,12 @@ var appErrorNs = errorx.NewNamespace("app")
 
 // define all error types here
 var (
-	ErrTypeInternal   = appErrorNs.NewType("internal")
-	ErrTypeValidation = appErrorNs.NewType("validation")
-	ErrTypeBind       = ErrTypeValidation.NewSubtype("bind")
-	ErrTypeNotFound   = appErrorNs.NewType("not_found")
+	ErrTypeInternal     = appErrorNs.NewType("internal")
+	ErrTypeValidation   = appErrorNs.NewType("validation")
+	ErrTypeBind         = ErrTypeValidation.NewSubtype("bind")
+	ErrTypeNotFound     = appErrorNs.NewType("not_found")
+	ErrTypeUnauthorized = appErrorNs.NewType("unauthorized")
+	ErrTypeForbidden    = appErrorNs.NewType("forbidden")
 )
 
 func typeToHttpCode(err error) int {
