@@ -1,8 +1,8 @@
 package api
 
 import (
+	appErrors "cdd-go-boilerplate/internal/app_errors"
 	"cdd-go-boilerplate/internal/entity"
-	"cdd-go-boilerplate/internal/pkg/errorx"
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
@@ -12,7 +12,8 @@ import (
 func validateStruct(v *validator.Validate, data any) error {
 	err := v.Struct(data)
 	if err != nil {
-		return errorx.New(errorx.ErrCodeBadRequest, err.Error())
+		// note: use validator translator package
+		return appErrors.ErrTypeValidation.Wrap(err, "validation failed")
 	}
 	return nil
 }
@@ -20,7 +21,7 @@ func validateStruct(v *validator.Validate, data any) error {
 func bindAndValidate[T any](ctx echo.Context, v *validator.Validate) (*T, error) {
 	data := new(T)
 	if err := ctx.Bind(data); err != nil {
-		return nil, errorx.New(errorx.ErrCodeBadRequest, err.Error())
+		return nil, appErrors.ErrTypeBind.Wrap(err, "failed to bind request")
 	}
 	if err := validateStruct(v, data); err != nil {
 		return nil, err

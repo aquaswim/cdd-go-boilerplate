@@ -6,6 +6,7 @@ require (
 	github.com/getkin/kin-openapi v0.132.0
 	github.com/go-playground/validator/v10 v10.26.0
 	github.com/golobby/container/v3 v3.3.2
+	github.com/joomcode/errorx v1.2.0
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/labstack/echo/v4 v4.13.4
 	github.com/oapi-codegen/echo-middleware v1.0.2

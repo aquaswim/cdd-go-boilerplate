@@ -12,10 +12,10 @@ type BaseSuccess struct {
 
 // Error defines model for Error.
 type Error struct {
-	Code    string       `json:"code"`
-	Edited  bool         `json:"edited"`
-	Error   *interface{} `json:"error,omitempty"`
-	Message string       `json:"message"`
+	Code    string      `json:"code"`
+	Edited  bool        `json:"edited"`
+	Error   interface{} `json:"error,omitempty"`
+	Message string      `json:"message"`
 }
 
 // HealthCheckResponse defines model for healthCheckResponse.

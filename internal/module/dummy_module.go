@@ -1,11 +1,12 @@
 package module
 
 import (
-	"cdd-go-boilerplate/internal/pkg/errorx"
+	appErrors "cdd-go-boilerplate/internal/app_errors"
 	"cdd-go-boilerplate/internal/pkg/utils"
 	"context"
 
 	"github.com/golobby/container/v3"
+	"github.com/joomcode/errorx"
 	"github.com/rs/zerolog"
 )
 
@@ -26,15 +27,17 @@ func (d dummyModule) Dummy(ctx context.Context, paramType string) (interface{}, 
 
 	switch paramType {
 	case "400":
-		return nil, errorx.New(errorx.ErrCodeBadRequest, "Dummy Error")
+		return nil, appErrors.ErrTypeValidation.New("dummy error").WithProperty(errorx.PropertyPayload(), map[string]any{
+			"param_type": paramType,
+		})
 	case "401":
-		return nil, errorx.New(errorx.ErrCodeUnauthorized, "Dummy Error")
+		return nil, appErrors.ErrTypeUnauthorized.New("dummy error")
 	case "403":
-		return nil, errorx.New(errorx.ErrCodeForbidden, "Dummy Error")
+		return nil, appErrors.ErrTypeForbidden.New("dummy error")
 	case "404":
-		return nil, errorx.New(errorx.ErrCodeNotFound, "Dummy Error")
+		return nil, appErrors.ErrTypeNotFound.New("dummy error")
 	case "500":
-		return nil, errorx.New(errorx.ErrCodeInternal, "Dummy Error")
+		return nil, appErrors.ErrTypeInternal.New("dummy error")
 	default:
 		return map[string]any{
 			"stuff": "lorem ipsum",
