@@ -36,7 +36,7 @@ lint:
 	golangci-lint run -v
 
 .PHONY: build
-build: generate
+build: ${__API_GEN_MODEL_OUTPUT} ${__API_GEN_OUTPUT}
 	@echo compile the app
 	@CGO_ENABLED=0 go build -v \
 		-o oapi-server ./cmd/oapi-server
@@ -47,7 +47,7 @@ __go-gen:
 	go generate ./...
 
 .PHONY: test
-test: generate __go-gen
+test: ${__API_GEN_MODEL_OUTPUT} ${__API_GEN_OUTPUT} __go-gen
 	@echo run all go test
 	@go test -coverprofile cover.out ./...
 
