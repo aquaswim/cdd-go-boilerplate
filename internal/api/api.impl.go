@@ -11,6 +11,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+//go:generate go tool oapi-codegen -config ../../api/generate-server.config.yaml -o api.gen.go ../../api/api.yaml
 type apiServer struct {
 	validate    *validator.Validate `container:"type"`
 	dummyModule module.DummyModule  `container:"type"`
