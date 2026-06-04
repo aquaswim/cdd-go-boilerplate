@@ -35,7 +35,7 @@ func NewEchoServer(api ServerInterface) Server {
 	svr.echo.Use(RecoverMiddleware())
 
 	// setup oapi handlers
-	swagger, err := GetSwagger()
+	swagger, err := GetSpec()
 	if err != nil {
 		panic(err)
 	}
