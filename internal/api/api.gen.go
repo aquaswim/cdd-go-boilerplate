@@ -16,7 +16,7 @@ import (
 	. "cdd-go-boilerplate/internal/entity"
 
 	"github.com/getkin/kin-openapi/openapi3"
-	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v5"
 	"github.com/oapi-codegen/runtime"
 )
 
@@ -24,13 +24,13 @@ import (
 type ServerInterface interface {
 
 	// (GET /dummy/sample)
-	DummyEndpoint(ctx echo.Context, params DummyEndpointParams) error
+	DummyEndpoint(ctx *echo.Context, params DummyEndpointParams) error
 
 	// (POST /dummy/sample)
-	DummyEndpointPost(ctx echo.Context) error
+	DummyEndpointPost(ctx *echo.Context) error
 
 	// (GET /healthcheck)
-	HealthCheck(ctx echo.Context) error
+	HealthCheck(ctx *echo.Context) error
 }
 
 // ServerInterfaceWrapper converts echo contexts to parameters.
@@ -39,7 +39,7 @@ type ServerInterfaceWrapper struct {
 }
 
 // DummyEndpoint converts echo context to params.
-func (w *ServerInterfaceWrapper) DummyEndpoint(ctx echo.Context) error {
+func (w *ServerInterfaceWrapper) DummyEndpoint(ctx *echo.Context) error {
 	var err error
 
 	// Parameter object where we will unmarshal all parameters from the context
@@ -57,7 +57,7 @@ func (w *ServerInterfaceWrapper) DummyEndpoint(ctx echo.Context) error {
 }
 
 // DummyEndpointPost converts echo context to params.
-func (w *ServerInterfaceWrapper) DummyEndpointPost(ctx echo.Context) error {
+func (w *ServerInterfaceWrapper) DummyEndpointPost(ctx *echo.Context) error {
 	var err error
 
 	// Invoke the callback with all the unmarshaled arguments
@@ -66,7 +66,7 @@ func (w *ServerInterfaceWrapper) DummyEndpointPost(ctx echo.Context) error {
 }
 
 // HealthCheck converts echo context to params.
-func (w *ServerInterfaceWrapper) HealthCheck(ctx echo.Context) error {
+func (w *ServerInterfaceWrapper) HealthCheck(ctx *echo.Context) error {
 	var err error
 
 	// Invoke the callback with all the unmarshaled arguments
@@ -78,15 +78,15 @@ func (w *ServerInterfaceWrapper) HealthCheck(ctx echo.Context) error {
 // are present on both echo.Echo and echo.Group, since we want to allow using
 // either of them for path registration
 type EchoRouter interface {
-	CONNECT(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) *echo.Route
-	DELETE(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) *echo.Route
-	GET(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) *echo.Route
-	HEAD(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) *echo.Route
-	OPTIONS(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) *echo.Route
-	PATCH(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) *echo.Route
-	POST(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) *echo.Route
-	PUT(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) *echo.Route
-	TRACE(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) *echo.Route
+	CONNECT(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) echo.RouteInfo
+	DELETE(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) echo.RouteInfo
+	GET(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) echo.RouteInfo
+	HEAD(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) echo.RouteInfo
+	OPTIONS(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) echo.RouteInfo
+	PATCH(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) echo.RouteInfo
+	POST(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) echo.RouteInfo
+	PUT(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) echo.RouteInfo
+	TRACE(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) echo.RouteInfo
 }
 
 // RegisterHandlersOptions configures RegisterHandlersWithOptions.

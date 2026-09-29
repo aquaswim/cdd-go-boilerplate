@@ -6,16 +6,22 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v5"
 	"github.com/rs/zerolog"
 )
 
 func ErrorHandler() echo.HTTPErrorHandler {
-	return func(err error, c echo.Context) {
-		if c.Response().Committed {
+	return func(c *echo.Context, err error) {
+		l := zerolog.Ctx(c.Request().Context())
+		resp, err2 := echo.UnwrapResponse(c.Response())
+		if err2 != nil {
+			l.Error().Err(err2).Msg("failed to unwrap response")
 			return
 		}
-		l := zerolog.Ctx(c.Request().Context())
+
+		if resp.Committed {
+			return
+		}
 		l.Error().Msgf("Error detected: %+v", err)
 
 		httpCode := http.StatusInternalServerError
@@ -30,12 +36,12 @@ func ErrorHandler() echo.HTTPErrorHandler {
 			l.Error().Err(err).Msgf("Error detected: %+v", resp)
 			httpCode = code
 			errResp = *resp
-		} else if echoErr, ok := err.(*echo.HTTPError); ok {
+		} else if statusCode := echo.StatusCode(err); statusCode != 0 {
 			// handle echo error
-			l.Error().Err(echoErr).Msg("framework error detected")
-			httpCode = echoErr.Code
+			l.Error().Err(err).Msg("framework error detected")
+			httpCode = statusCode
 			errResp.Code = "FRAMEWORK"
-			errResp.Message = fmt.Sprint(echoErr.Message)
+			errResp.Message = fmt.Sprint(err)
 		} else {
 			l.Error().Err(err).Msg("unknown error detected")
 		}

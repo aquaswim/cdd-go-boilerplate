@@ -2,20 +2,16 @@ package api
 
 import (
 	"context"
-	"errors"
-	"net/http"
-	"time"
 
 	"github.com/getkin/kin-openapi/openapi3filter"
-	"github.com/labstack/echo/v4"
-	echoMiddleware "github.com/labstack/echo/v4/middleware"
-	oapiMiddleware "github.com/oapi-codegen/echo-middleware"
+	"github.com/labstack/echo/v5"
+	echoMiddleware "github.com/labstack/echo/v5/middleware"
+	oapiMiddleware "github.com/oapi-codegen/echo-v5-middleware"
 	"github.com/rs/zerolog/log"
 )
 
 type Server interface {
-	Start() error
-	Stop() error
+	Start(ctx context.Context) error
 }
 
 type echoServer struct {
@@ -27,12 +23,12 @@ func NewEchoServer(api ServerInterface) Server {
 
 	// setup echo server
 	svr.echo = echo.New()
-	svr.echo.HideBanner = true
+	//svr.echo.HideBanner = true
 	svr.echo.HTTPErrorHandler = ErrorHandler()
 
 	svr.echo.Use(echoMiddleware.RequestID())
+	svr.echo.Use(echoMiddleware.Recover())
 	svr.echo.Use(LoggerMiddleware(&log.Logger))
-	svr.echo.Use(RecoverMiddleware())
 
 	// setup oapi handlers
 	swagger, err := GetSpec()
@@ -55,18 +51,11 @@ func NewEchoServer(api ServerInterface) Server {
 	return svr
 }
 
-func (e echoServer) Start() error {
-	err := e.echo.Start(":3000")
-
-	if errors.Is(err, http.ErrServerClosed) {
-		return nil
+func (e echoServer) Start(ctx context.Context) error {
+	sc := echo.StartConfig{
+		Address:    ":3000",
+		HideBanner: true,
 	}
 
-	return err
-}
-
-func (e echoServer) Stop() error {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-	return e.echo.Shutdown(ctx)
+	return sc.Start(ctx, e.echo)
 }

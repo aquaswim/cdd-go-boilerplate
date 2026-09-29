@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v5"
 )
 
 func validateStruct(v *validator.Validate, data any) error {
@@ -18,7 +18,7 @@ func validateStruct(v *validator.Validate, data any) error {
 	return nil
 }
 
-func bindAndValidate[T any](ctx echo.Context, v *validator.Validate) (*T, error) {
+func bindAndValidate[T any](ctx *echo.Context, v *validator.Validate) (*T, error) {
 	data := new(T)
 	if err := ctx.Bind(data); err != nil {
 		return nil, appErrors.ErrTypeBind.Wrap(err, "failed to bind request")
@@ -29,6 +29,6 @@ func bindAndValidate[T any](ctx echo.Context, v *validator.Validate) (*T, error)
 	return data, nil
 }
 
-func sendSuccessResponse(ctx echo.Context, data any) error {
+func sendSuccessResponse(ctx *echo.Context, data any) error {
 	return ctx.JSON(http.StatusOK, entity.NewSuccessResponse(data))
 }

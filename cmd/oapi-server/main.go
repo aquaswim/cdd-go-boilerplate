@@ -16,21 +16,13 @@ func main() {
 
 	server := utils.Resolve[api.Server](c)
 
-	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
-	defer func() {
-		stop()
-	}()
+	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer cancel()
 
-	go func() {
-		err := server.Start()
-		if err != nil {
-			log.Fatal().Err(err).Msg("failed to start server")
-		}
-	}()
-	<-ctx.Done()
-	log.Info().Msg("shutting down server")
-	err := server.Stop()
+	err := server.Start(ctx)
 	if err != nil {
-		log.Fatal().Err(err).Msg("failed to stop server")
+		log.Fatal().Err(err).Msg("failed to start server")
 	}
+
+	log.Info().Msg("shutting down server")
 }
