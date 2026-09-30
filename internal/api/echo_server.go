@@ -2,6 +2,7 @@ package api
 
 import (
 	"cdd-go-boilerplate/internal/config"
+	globalLogger "cdd-go-boilerplate/internal/pkg/global_logger"
 	"cdd-go-boilerplate/internal/pkg/utils"
 	"context"
 
@@ -35,6 +36,7 @@ func FillEchoServer(c container.Container) (Server, error) {
 	svr.echo = echo.New()
 	svr.echo.Validator = svr.newValidator()
 	svr.echo.HTTPErrorHandler = ErrorHandler()
+	svr.echo.Logger = globalLogger.SlogAdapter()
 
 	svr.echo.Use(echoMiddleware.RequestID())
 	svr.echo.Use(echoMiddleware.Recover())
@@ -63,8 +65,7 @@ func FillEchoServer(c container.Container) (Server, error) {
 
 func (e echoServer) Start(ctx context.Context) error {
 	sc := echo.StartConfig{
-		Address:    e.cfg.ListenAddr,
-		HideBanner: true,
+		Address: e.cfg.ListenAddr,
 	}
 
 	return sc.Start(ctx, e.echo)

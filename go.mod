@@ -12,6 +12,7 @@ require (
 	github.com/oapi-codegen/echo-v5-middleware v0.1.1
 	github.com/oapi-codegen/runtime v1.4.1
 	github.com/rs/zerolog v1.35.1
+	github.com/samber/slog-zerolog/v2 v2.9.2
 )
 
 require (
@@ -30,6 +31,8 @@ require (
 	github.com/oasdiff/yaml v0.1.1 // indirect
 	github.com/oasdiff/yaml3 v0.0.14 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
+	github.com/samber/lo v1.53.0 // indirect
+	github.com/samber/slog-common v0.21.0 // indirect
 	github.com/santhosh-tekuri/jsonschema/v6 v6.0.2 // indirect
 	github.com/speakeasy-api/jsonpath v0.6.3 // indirect
 	github.com/speakeasy-api/openapi v1.19.2 // indirect
