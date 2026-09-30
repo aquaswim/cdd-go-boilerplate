@@ -1,9 +1,13 @@
 package api
 
 import (
+	"cdd-go-boilerplate/internal/config"
+	"cdd-go-boilerplate/internal/pkg/utils"
 	"context"
 
 	"github.com/getkin/kin-openapi/openapi3filter"
+	"github.com/go-playground/validator/v10"
+	"github.com/golobby/container/v3"
 	"github.com/labstack/echo/v5"
 	echoMiddleware "github.com/labstack/echo/v5/middleware"
 	oapiMiddleware "github.com/oapi-codegen/echo-v5-middleware"
@@ -15,15 +19,21 @@ type Server interface {
 }
 
 type echoServer struct {
-	echo *echo.Echo
+	echo     *echo.Echo
+	cfg      *config.Config      `container:"type"`
+	api      ServerInterface     `container:"type"`
+	validate *validator.Validate `container:"type"`
 }
 
-func NewEchoServer(api ServerInterface) Server {
-	svr := &echoServer{}
+func FillEchoServer(c container.Container) (Server, error) {
+	svr, err := utils.Fill[echoServer](c)
+	if err != nil {
+		return nil, err
+	}
 
 	// setup echo server
 	svr.echo = echo.New()
-	//svr.echo.HideBanner = true
+	svr.echo.Validator = svr.newValidator()
 	svr.echo.HTTPErrorHandler = ErrorHandler()
 
 	svr.echo.Use(echoMiddleware.RequestID())
@@ -46,14 +56,14 @@ func NewEchoServer(api ServerInterface) Server {
 			//AuthenticationFunc: authentication(authModule),
 		},
 	}))
-	RegisterHandlers(svr.echo, api)
+	RegisterHandlers(svr.echo, svr.api)
 
-	return svr
+	return svr, nil
 }
 
 func (e echoServer) Start(ctx context.Context) error {
 	sc := echo.StartConfig{
-		Address:    ":3000",
+		Address:    e.cfg.ListenAddr,
 		HideBanner: true,
 	}
 

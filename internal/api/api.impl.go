@@ -6,15 +6,13 @@ import (
 	"cdd-go-boilerplate/internal/pkg/utils"
 	"net/http"
 
-	"github.com/go-playground/validator/v10"
 	"github.com/golobby/container/v3"
 	"github.com/labstack/echo/v5"
 )
 
 //go:generate go tool oapi-codegen -config ../../api/generate-server.config.yaml -o api.gen.go ../../api/api.yaml
 type apiServer struct {
-	validate    *validator.Validate `container:"type"`
-	dummyModule module.DummyModule  `container:"type"`
+	dummyModule module.DummyModule `container:"type"`
 }
 
 func FillApiServer(c container.Container) (ServerInterface, error) {
@@ -28,7 +26,7 @@ func (a apiServer) HealthCheck(ctx *echo.Context) error {
 }
 
 func (a apiServer) DummyEndpoint(ctx *echo.Context, params entity.DummyEndpointParams) error {
-	err := validateStruct(a.validate, params)
+	err := ctx.Validate(params)
 	if err != nil {
 		return err
 	}
@@ -41,7 +39,7 @@ func (a apiServer) DummyEndpoint(ctx *echo.Context, params entity.DummyEndpointP
 }
 
 func (a apiServer) DummyEndpointPost(ctx *echo.Context) error {
-	param, err := bindAndValidate[entity.DummyEndpointPostJSONBody](ctx, a.validate)
+	param, err := bindAndValidate[entity.DummyEndpointPostJSONBody](ctx)
 	if err != nil {
 		return err
 	}

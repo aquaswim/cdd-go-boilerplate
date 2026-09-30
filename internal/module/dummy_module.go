@@ -11,7 +11,7 @@ import (
 )
 
 type DummyModule interface {
-	Dummy(ctx context.Context, paramType string) (interface{}, error)
+	Dummy(ctx context.Context, paramType string) (any, error)
 }
 
 type dummyModule struct {
@@ -21,7 +21,7 @@ func FillDummyModule(c container.Container) (DummyModule, error) {
 	return utils.Fill[dummyModule](c)
 }
 
-func (d dummyModule) Dummy(ctx context.Context, paramType string) (interface{}, error) {
+func (d dummyModule) Dummy(ctx context.Context, paramType string) (any, error) {
 	l := zerolog.Ctx(ctx)
 	l.Info().Msgf("Dummy endpoint called with type: %s", paramType)
 
