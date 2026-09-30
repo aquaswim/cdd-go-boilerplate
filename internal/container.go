@@ -26,7 +26,7 @@ func InitContainer() container.Container {
 
 	utils.SingletonWithAutoInject(container.Global, api.FillApiServer)
 
-	container.MustSingleton(container.Global, api.NewEchoServer)
+	utils.SingletonWithAutoInject(container.Global, api.FillEchoServer)
 
 	return container.Global
 }

@@ -1,8 +1,8 @@
 package api
 
 import (
-	"github.com/labstack/echo/v4"
-	echoMiddleware "github.com/labstack/echo/v4/middleware"
+	"github.com/labstack/echo/v5"
+	echoMiddleware "github.com/labstack/echo/v5/middleware"
 	"github.com/rs/zerolog"
 )
 
@@ -17,8 +17,7 @@ func LoggerMiddleware(logger *zerolog.Logger) echo.MiddlewareFunc {
 		LogProtocol:     true,
 		LogUserAgent:    true,
 		LogResponseSize: true,
-		LogError:        true,
-		BeforeNextFunc: func(c echo.Context) {
+		BeforeNextFunc: func(c *echo.Context) {
 			// inject logger to context
 			lCtx := logger.
 				With().
@@ -27,15 +26,7 @@ func LoggerMiddleware(logger *zerolog.Logger) echo.MiddlewareFunc {
 				WithContext(c.Request().Context())
 			c.SetRequest(c.Request().WithContext(lCtx))
 		},
-		LogValuesFunc: func(c echo.Context, v echoMiddleware.RequestLoggerValues) error {
-			// https://cloud.google.com/logging/docs/reference/v2/rest/v2/LogEntry#HttpRequest
-			logDetail := zerolog.Dict().
-				Str("requestMethod", v.Method).
-				Str("requestUrl", v.URI).
-				Str("protocol", v.Protocol).
-				Str("userAgent", v.UserAgent).
-				Int64("responseSize", v.ResponseSize).
-				Dur("latency", v.Latency)
+		LogValuesFunc: func(c *echo.Context, v echoMiddleware.RequestLoggerValues) error {
 			var level = zerolog.InfoLevel
 			if v.Error != nil {
 				level = zerolog.ErrorLevel
@@ -44,7 +35,13 @@ func LoggerMiddleware(logger *zerolog.Logger) echo.MiddlewareFunc {
 			zerolog.Ctx(c.Request().Context()).
 				WithLevel(level).
 				Err(v.Error).
-				Dict("httpRequest", logDetail).
+				// https://cloud.google.com/logging/docs/reference/v2/rest/v2/LogEntry#HttpRequest
+				Str("requestMethod", v.Method).
+				Str("requestUrl", v.URI).
+				Str("protocol", v.Protocol).
+				Str("userAgent", v.UserAgent).
+				Int64("responseSize", v.ResponseSize).
+				Dur("latency", v.Latency).
 				Msgf("HTTPREQ: %s | %s | %s %s - %s", v.Latency, v.RemoteIP, v.Method, v.URI, v.RequestID)
 			return nil
 		},

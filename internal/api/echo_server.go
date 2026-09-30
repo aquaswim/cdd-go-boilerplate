@@ -1,38 +1,46 @@
 package api
 
 import (
+	"cdd-go-boilerplate/internal/config"
+	globalLogger "cdd-go-boilerplate/internal/pkg/global_logger"
+	"cdd-go-boilerplate/internal/pkg/utils"
 	"context"
-	"errors"
-	"net/http"
-	"time"
 
 	"github.com/getkin/kin-openapi/openapi3filter"
-	"github.com/labstack/echo/v4"
-	echoMiddleware "github.com/labstack/echo/v4/middleware"
-	oapiMiddleware "github.com/oapi-codegen/echo-middleware"
+	"github.com/go-playground/validator/v10"
+	"github.com/golobby/container/v3"
+	"github.com/labstack/echo/v5"
+	echoMiddleware "github.com/labstack/echo/v5/middleware"
+	oapiMiddleware "github.com/oapi-codegen/echo-v5-middleware"
 	"github.com/rs/zerolog/log"
 )
 
 type Server interface {
-	Start() error
-	Stop() error
+	Start(ctx context.Context) error
 }
 
 type echoServer struct {
-	echo *echo.Echo
+	echo     *echo.Echo
+	cfg      *config.Config      `container:"type"`
+	api      ServerInterface     `container:"type"`
+	validate *validator.Validate `container:"type"`
 }
 
-func NewEchoServer(api ServerInterface) Server {
-	svr := &echoServer{}
+func FillEchoServer(c container.Container) (Server, error) {
+	svr, err := utils.Fill[echoServer](c)
+	if err != nil {
+		return nil, err
+	}
 
 	// setup echo server
 	svr.echo = echo.New()
-	svr.echo.HideBanner = true
+	svr.echo.Validator = svr.newValidator()
 	svr.echo.HTTPErrorHandler = ErrorHandler()
+	svr.echo.Logger = globalLogger.SlogAdapter()
 
 	svr.echo.Use(echoMiddleware.RequestID())
+	svr.echo.Use(echoMiddleware.Recover())
 	svr.echo.Use(LoggerMiddleware(&log.Logger))
-	svr.echo.Use(RecoverMiddleware())
 
 	// setup oapi handlers
 	swagger, err := GetSpec()
@@ -50,23 +58,15 @@ func NewEchoServer(api ServerInterface) Server {
 			//AuthenticationFunc: authentication(authModule),
 		},
 	}))
-	RegisterHandlers(svr.echo, api)
+	RegisterHandlers(svr.echo, svr.api)
 
-	return svr
+	return svr, nil
 }
 
-func (e echoServer) Start() error {
-	err := e.echo.Start(":3000")
-
-	if errors.Is(err, http.ErrServerClosed) {
-		return nil
+func (e echoServer) Start(ctx context.Context) error {
+	sc := echo.StartConfig{
+		Address: e.cfg.ListenAddr,
 	}
 
-	return err
-}
-
-func (e echoServer) Stop() error {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-	return e.echo.Shutdown(ctx)
+	return sc.Start(ctx, e.echo)
 }
