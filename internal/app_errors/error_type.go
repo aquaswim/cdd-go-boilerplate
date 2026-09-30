@@ -1,6 +1,8 @@
 package appErrors
 
 import (
+	"net/http"
+
 	"github.com/joomcode/errorx"
 )
 
@@ -18,15 +20,22 @@ var (
 
 func typeToHttpCode(err error) int {
 	switch errorx.TypeSwitch(err,
-		ErrTypeNotFound,
-		ErrTypeValidation,
 		ErrTypeInternal,
+		ErrTypeValidation,
+		ErrTypeBind,
+		ErrTypeNotFound,
+		ErrTypeUnauthorized,
+		ErrTypeForbidden,
 	) {
 	case ErrTypeNotFound:
-		return 404
-	case ErrTypeValidation:
-		return 400
+		return http.StatusNotFound
+	case ErrTypeValidation, ErrTypeBind:
+		return http.StatusBadRequest
+	case ErrTypeUnauthorized:
+		return http.StatusUnauthorized
+	case ErrTypeForbidden:
+		return http.StatusForbidden
 	default:
-		return 500
+		return http.StatusInternalServerError
 	}
 }
